@@ -1,0 +1,32 @@
+# --- 实验输出 / 权重（勿提交 GitHub）---
+snn_out/
+snn_out.zip
+ann_out/
+runs/
+checkpoints/
+*.pt
+!**/placeholder.pt
+
+# Python
+__pycache__/
+*.py[cod]
+.Python
+*.egg-info/
+.eggs/
+dist/
+build/
+.venv/
+venv/
+
+# IDE / OS
+.idea/
+.vscode/
+.DS_Store
+Thumbs.db
+
+# Jupyter
+.ipynb_checkpoints/
+snn_out.zip
+*.zip
+checkpoints/
+snn_out/

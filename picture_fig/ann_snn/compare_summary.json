@@ -1,0 +1,9 @@
+{
+  "ann": {
+    "best_val_acc_pct": 99.31866526603699
+  },
+  "snn": {
+    "best_val_acc_pct": 95.12936472892761
+  },
+  "epochs_plotted": 20
+}
