@@ -3,6 +3,9 @@ Spiking **ResNet-18** from SpikingJelly (`spiking_resnet18`), multi-step `[T,B,C
 
 Use when you want a **lighter** backbone than MSF-Res2Net (fewer params, often faster / less OOM).
 Same training loop as `res2net_msf.MSFRes2Net`: forward returns `[T, B, num_classes]`.
+
+Neurons (see ``TrainConfig``): **MSF** (`use_msf=True`), **LIF** (`use_msf=False`, ``lif_variant="lif"``),
+or **PLIF** / ``ParametricLIFNode`` (`use_msf=False`, ``lif_variant="plif"``) with learnable decay.
 """
 from __future__ import annotations
 
@@ -20,7 +23,7 @@ if TYPE_CHECKING:
 
 def build_spiking_resnet18(cfg: "TrainConfig") -> spiking_resnet.SpikingResNet:
     """
-    Build `spiking_resnet18` with MSFNode or LIFNode, `num_classes` from cfg.
+    Build `spiking_resnet18` with MSFNode, LIFNode, or ParametricLIFNode (PLIF), `num_classes` from cfg.
 
     Call **after** `cfg.num_classes` is set (e.g. from dataloader).
     """
@@ -38,6 +41,19 @@ def build_spiking_resnet18(cfg: "TrainConfig") -> spiking_resnet.SpikingResNet:
             surrogate_alpha=float(cfg.msf_surrogate_alpha),
             step_mode="m",
             record_v=False,
+        )
+    elif getattr(cfg, "lif_variant", "lif") == "plif":
+        # Parametric LIF (Fang et al.): learnable membrane time constant; init_tau matches LIF tau for fair comparison.
+        model = spiking_resnet.spiking_resnet18(
+            pretrained=False,
+            progress=False,
+            spiking_neuron=neuron.ParametricLIFNode,
+            num_classes=nc,
+            init_tau=float(cfg.lif_tau),
+            decay_input=True,
+            v_reset=0.0,
+            detach_reset=True,
+            step_mode="m",
         )
     else:
         model = spiking_resnet.spiking_resnet18(

@@ -117,7 +117,12 @@ def train_one_epoch(
 
 def main() -> None:
     parser = argparse.ArgumentParser(description="Train PlantVillage MSF-Res2Net SNN")
-    parser.add_argument("--preset", type=str, default=None, help="config.PRESETS key, e.g. no_msf")
+    parser.add_argument(
+        "--preset",
+        type=str,
+        default=None,
+        help="config.PRESETS key: no_msf | plif_rn18 | no_attention | ablation_baseline (see config.py)",
+    )
     parser.add_argument("--epochs", type=int, default=None)
     parser.add_argument("--batch_size", type=int, default=None)
     parser.add_argument("--lr", type=float, default=None)

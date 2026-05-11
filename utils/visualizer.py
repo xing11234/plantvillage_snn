@@ -203,7 +203,7 @@ def forward_collect_spiking_outputs(
         return _hook
 
     for name, m in model.named_modules():
-        if isinstance(m, (MSFNode, neuron.LIFNode)):
+        if isinstance(m, (MSFNode, neuron.LIFNode, neuron.ParametricLIFNode)):
             hooks.append(m.register_forward_hook(make_hook(name)))
 
     model.eval()
@@ -347,7 +347,7 @@ def save_layer_mean_spike_bar(
         return _hook
 
     for name, m in model.named_modules():
-        if isinstance(m, (MSFNode, neuron.LIFNode)):
+        if isinstance(m, (MSFNode, neuron.LIFNode, neuron.ParametricLIFNode)):
             hooks.append(m.register_forward_hook(make_hook(_short_module_name(name))))
 
     with torch.no_grad():

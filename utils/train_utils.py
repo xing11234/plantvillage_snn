@@ -109,7 +109,7 @@ class SpikeCounter:
             return _hook
 
         for name, m in self.model.named_modules():
-            if isinstance(m, (MSFNode, neuron.LIFNode)):
+            if isinstance(m, (MSFNode, neuron.LIFNode, neuron.ParametricLIFNode)):
                 self.hooks.append(m.register_forward_hook(make_hook(name)))
 
     def reset_buffer(self) -> None:

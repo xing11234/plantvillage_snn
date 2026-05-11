@@ -49,7 +49,14 @@ class TrainConfig:
     """hard: subtract threshold on spike; soft: multiplicative leak only."""
 
     lif_tau: float = 2.0
-    """Membrane time constant used when use_msf=False (LIFNode)."""
+    """Membrane time constant (LIFNode ``tau``) or initial membrane time constant (ParametricLIFNode ``init_tau``) when ``use_msf=False``."""
+
+    lif_variant: str = "lif"
+    """
+    When ``use_msf=False`` and the backbone is SpikingJelly ``spiking_resnet18``:
+    ``lif`` = ``LIFNode``; ``plif`` = ``ParametricLIFNode`` (PLIF, learnable decay / Fang et al.).
+    Ignored when ``use_msf=True`` (MSF nodes).
+    """
 
     # --- Res2Net-29_32w_4s style ---
     base_width: int = 32
@@ -114,9 +121,14 @@ class TrainConfig:
             raise ValueError("label_smoothing must be in [0, 1).")
         if self.msf_surrogate_alpha <= 0:
             raise ValueError("msf_surrogate_alpha must be > 0.")
+        if self.lif_variant not in ("lif", "plif"):
+            raise ValueError("lif_variant must be 'lif' or 'plif'.")
 
     def tag(self) -> str:
-        return f"MSF{int(self.use_msf)}_ATT{int(self.use_attention)}_T{self.T}_D{self.msf_D}"
+        base = f"MSF{int(self.use_msf)}_ATT{int(self.use_attention)}_T{self.T}_D{self.msf_D}"
+        if not self.use_msf:
+            base += f"_{self.lif_variant}"
+        return base
 
     def to_dict(self) -> Dict[str, Any]:
         d = {}
@@ -130,6 +142,7 @@ class TrainConfig:
 PRESETS: Dict[str, TrainConfig] = {
     "default": TrainConfig(),
     "no_msf": TrainConfig(use_msf=False),
+    "plif_rn18": TrainConfig(use_msf=False, lif_variant="plif"),
     "no_attention": TrainConfig(use_attention=False),
     "ablation_baseline": TrainConfig(use_msf=False, use_attention=False),
 }

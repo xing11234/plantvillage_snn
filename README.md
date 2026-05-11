@@ -40,6 +40,7 @@ python train.py --run_name exp_msf --epochs 100 --batch_size 32 --lr 0.1
 常用参数：
 
 - `--preset no_msf`：消融，使用标准 `LIFNode` 替代 MSF（见 `config.PRESETS`）。
+- **SpikingJelly ResNet-18**（`models/spiking_resnet18_backbone.py`）：`use_msf=True` 用 MSF；`use_msf=False` 且 `lif_variant="lif"` 用 LIF；`lif_variant="plif"` 用 **ParametricLIFNode（PLIF）**（与 `lif_tau` 作为 `init_tau` 对齐 LIF 初值）。Notebook 里用 `RN18_NEURON` 切换。预设 `--preset plif_rn18` 等价于 `use_msf=False, lif_variant="plif"`。
 - `--no_amp`：关闭混合精度。
 - `--no_spike_counter`：关闭脉冲统计钩子。
 - `--viz`：按 `config.TrainConfig.viz_every_n_epochs` 保存输入脉冲栅格与首个 MSF 单元的膜电位曲线（`utils/visualizer.py`）。
@@ -65,7 +66,7 @@ python test.py --ckpt checkpoints/best_msf_res2net.pt --batch_size 64
 - `use_msf: bool`：`False` 时所有 `SeqConvBnMSF` 与块内节点退化为 **LIF**。
 - `use_attention: bool`：`False` 时残差块内 **CSA 注意力关闭**（`nn.Identity`）。
 
-可在 `config.PRESETS` 中组合 `no_msf`、`no_attention`、`ablation_baseline` 等，或通过 `get_config("no_msf")` 在代码里切换。
+可在 `config.PRESETS` 中组合 `no_msf`、`plif_rn18`（ResNet-18 + PLIF）、`no_attention`、`ablation_baseline` 等，或通过 `get_config("no_msf")` / `get_config(use_msf=False, lif_variant="plif")` 在代码里切换。
 
 ## 能耗相关指标
 
